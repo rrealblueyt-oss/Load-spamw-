@@ -1,0 +1,85 @@
+--============================--
+--  VYNIXU SPAWNER NO SHAKE   --
+--  NO EARTHQUAKE - FULL MERGE--
+--============================--
+
+-- Load spawner gốc
+local VynixuEntitySpawnerV2 = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Entity%20Spawner/V2/Source.lua"
+))()
+
+-- ============================
+-- NO EARTHQUAKE
+-- ============================
+pcall(function()
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder", 5)
+    if remotesFolder and remotesFolder:FindFirstChild("RequestAsset") then
+        remotesFolder.RequestAsset.OnClientInvoke = function(asset)
+            if asset == "Earthquake" then
+                return nil -- chặn động đất
+            end
+        end
+    end
+end)
+
+-- ============================
+-- NO CAMERA SHAKE
+-- ============================
+pcall(function()
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
+    local Main_Game = require(playerGui.MainUI.Initiator.Main_Game)
+
+    if Main_Game.camShaker then
+        -- vô hiệu hóa toàn bộ hàm rung
+        for k,v in pairs(Main_Game.camShaker) do
+            if type(v) == "function" then
+                Main_Game.camShaker[k] = function() end
+            end
+        end
+    end
+end)
+
+-- ============================
+-- OVERRIDE DEFAULT CONFIG
+-- ============================
+pcall(function()
+    if VynixuEntitySpawnerV2.defaultConfig then
+        -- Tắt động đất
+        VynixuEntitySpawnerV2.defaultConfig.Earthquake = {
+            Enabled = false
+        }
+
+        -- Tắt rung màn hình
+        VynixuEntitySpawnerV2.defaultConfig.CameraShake = {
+            Enabled = false,
+            Values = {0,0,0,0},
+            Range = 0
+        }
+    end
+end)
+
+-- ============================
+-- NO CRUCIFIX SHAKE
+-- ============================
+pcall(function()
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
+    local Main_Game = require(playerGui.MainUI.Initiator.Main_Game)
+
+    if Main_Game.camShaker then
+        Main_Game.camShaker.StartShake = function() end
+        Main_Game.camShaker.ShakeOnce = function() end
+    end
+end)
+
+print("✅ FULL MERGE ENABLED")
+print("❌ NO EARTHQUAKE")
+print("❌ NO CAMERA SHAKE")
+print("❌ NO CRUCIFIX SHAKE")
+print("✅ ENTITY SYSTEM NORMAL")
+
+return VynixuEntitySpawnerV2
